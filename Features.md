@@ -84,12 +84,20 @@ F13 Leaderboards
   All-time records (highest rating, longest win streak)
   Country-based leaderboards
 
-F14 Blog & Content
+F14 FICS Client — Browser-based Free Internet Chess Server terminal
+  WebSocket relay between browser and freechess.org:5000 TCP
+  Login handshake with username/password or guest access
+  Terminal output with ANSI stripping and auto-scroll
+  Command history with up/down arrow navigation
+  Status indicator (connecting / connected / disconnected / error)
+  Requires Google login to access the page
+
+F16 Blog & Content
   Blog with Markdown support and front-matter metadata
   Comment system with admin moderation
   Kanban board in admin for project tracking
 
-F15 Admin Dashboard
+F17 Admin Dashboard
   User management (view, search, ban)
   Server metrics (CPU, memory, disk) with historical charts
   Blog comment moderation

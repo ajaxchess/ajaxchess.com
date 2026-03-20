@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}FICS Client — AjaxChess.com{% endblock %}
+{% block description %}Browser-based Free Internet Chess Server client. Play chess online via FICS directly in your browser.{% endblock %}
+
+{% block content %}
+<div class="fics-layout">
+
+  <!-- Connection panel -->
+  <div class="fics-panel" id="fics-panel">
+    <div class="fics-panel-row">
+      <span class="fics-status-dot" id="status-dot"></span>
+      <span class="fics-status-text" id="status-text">Not connected</span>
+
+      <div class="fics-creds" id="fics-creds">
+        <input id="fics-user" class="fics-input" type="text"
+               placeholder="FICS username (blank = guest)"
+               value="{{ user.display_name or '' }}" maxlength="17" autocomplete="off">
+        <input id="fics-pass" class="fics-input" type="password"
+               placeholder="Password (guests leave blank)" maxlength="32" autocomplete="off">
+        <button id="connect-btn" class="fics-btn fics-btn-connect" onclick="connect()">Connect</button>
+      </div>
+
+      <button id="disconnect-btn" class="fics-btn fics-btn-disconnect" onclick="disconnect()" style="display:none">Disconnect</button>
+    </div>
+  </div>
+
+  <!-- Terminal output -->
+  <div class="fics-terminal" id="fics-terminal" aria-live="polite" aria-label="FICS output"></div>
+
+  <!-- Command input -->
+  <div class="fics-input-bar">
+    <span class="fics-prompt">fics%</span>
+    <input id="cmd-input" class="fics-cmd-input" type="text"
+           placeholder="Enter FICS command…" autocomplete="off" disabled
+           onkeydown="handleKey(event)">
+    <button class="fics-btn fics-btn-send" onclick="sendCmd()" id="send-btn" disabled>Send</button>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/fics.js"></script>
+{% endblock %}

@@ -9,7 +9,7 @@ from typing import Optional
 import psutil
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -19,8 +19,10 @@ from starlette.config import Config
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
+import asyncio
 import markdown as md_lib
 from auth import clear_session, get_current_user, oauth, set_session_user, SECRET_KEY
+from fics import FICSSession
 from database import BlogComment, ServerStats, UserProfile, get_db, init_db, SessionLocal
 import settings as site_settings
 
@@ -112,6 +114,97 @@ async def terms_page(request: Request):
         "mode": "terms",
         "user": get_current_user(request),
     })
+
+# ── FICS page ─────────────────────────────────────────────────────────────────
+@app.get("/fics", response_class=HTMLResponse)
+async def fics_page(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/auth/login?next=/fics", status_code=302)
+    return templates.TemplateResponse("fics.html", {
+        "request": request,
+        "mode":    "fics",
+        "user":    user,
+    })
+
+
+@app.websocket("/ws/fics")
+async def fics_websocket(websocket: WebSocket):
+    await websocket.accept()
+
+    user = websocket.session.get("user")
+    if not user:
+        await websocket.send_json({"type": "error", "msg": "Authentication required — please sign in."})
+        await websocket.close(code=1008)
+        return
+
+    session = FICSSession()
+
+    # ── Wait for the browser's connect message ────────────────────────────
+    try:
+        msg = await asyncio.wait_for(websocket.receive_json(), timeout=30)
+    except (asyncio.TimeoutError, WebSocketDisconnect):
+        await websocket.close()
+        return
+
+    if msg.get("type") != "connect":
+        await websocket.close()
+        return
+
+    fics_user = (msg.get("fics_user") or "").strip() or "guest"
+    fics_pass = msg.get("fics_pass") or ""
+
+    # ── Open TCP connection to FICS and log in ────────────────────────────
+    await websocket.send_json({"type": "status", "state": "connecting",
+                               "msg": f"Connecting to FICS as {fics_user}…"})
+    try:
+        transcript = await session.connect(fics_user, fics_pass)
+        await websocket.send_json({"type": "data", "text": transcript})
+        await websocket.send_json({"type": "status", "state": "connected",
+                                   "msg": f"Connected as {fics_user}"})
+    except asyncio.TimeoutError:
+        await websocket.send_json({"type": "error", "msg": "Connection to FICS timed out."})
+        await websocket.close()
+        return
+    except Exception as e:
+        await websocket.send_json({"type": "error", "msg": f"FICS connection failed: {e}"})
+        await websocket.close()
+        return
+
+    # ── Bidirectional relay ───────────────────────────────────────────────
+    async def fics_to_ws():
+        """Read from FICS, forward to browser."""
+        while True:
+            text = await session.read()
+            if text is None:
+                await websocket.send_json({"type": "status", "state": "disconnected",
+                                           "msg": "FICS closed the connection."})
+                break
+            await websocket.send_json({"type": "data", "text": text})
+
+    async def ws_to_fics():
+        """Read from browser, forward to FICS."""
+        while True:
+            try:
+                msg = await websocket.receive_json()
+            except WebSocketDisconnect:
+                break
+            if msg.get("type") == "command":
+                await session.send(msg.get("text", ""))
+            elif msg.get("type") == "disconnect":
+                break
+
+    try:
+        await asyncio.gather(fics_to_ws(), ws_to_fics())
+    except Exception:
+        pass
+    finally:
+        session.close()
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
 
 # ── Auth routes ───────────────────────────────────────────────────────────────
 @app.get("/auth/login")

@@ -20,5 +20,6 @@
 
 ## Done
 - F1 Create initial project structure — FastAPI, SQLite, Google OAuth, coming soon page, admin, blog
+- F14 FICS Client — Browser-based Free Internet Chess Server terminal via WebSockets
 - D1 Repository created with MIT license
 - D2 ads.txt added for Google AdSense
