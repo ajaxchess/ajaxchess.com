@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}AjaxChess Blog{% endblock %}
+{% block description %}The AjaxChess.com blog — thoughts on chess, building, and the future of online play.{% endblock %}
+{% block canonical %}https://ajaxchess.com/blog{% endblock %}
+{% block og_url %}https://ajaxchess.com/blog{% endblock %}
+{% block og_title %}AjaxChess Blog{% endblock %}
+{% block og_description %}The AjaxChess.com blog — thoughts on chess, building, and the future of online play.{% endblock %}
+
+{% block content %}
+<div class="blog-wrapper">
+
+  <div class="blog-header">
+    <h1 class="blog-title">♟ AjaxChess Blog</h1>
+    <p class="blog-subtitle">Thoughts on chess, building, and the future of online play.</p>
+  </div>
+
+  <div class="blog-post-list">
+    {% for post in posts %}
+    <article class="blog-card">
+      <a href="/blog/{{ post.slug }}" class="blog-card-link">
+        <div class="blog-card-meta">
+          <time datetime="{{ post.date }}">{{ post.date_display }}</time>
+        </div>
+        <h2 class="blog-card-title">{{ post.title }}</h2>
+        <p class="blog-card-excerpt">{{ post.excerpt }}</p>
+        <span class="blog-card-read-more">Read more →</span>
+      </a>
+    </article>
+    {% else %}
+    <p class="blog-empty">No posts yet — check back soon.</p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

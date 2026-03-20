@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}AjaxChess.com — Play Chess Online{% endblock %}
+{% block description %}AjaxChess.com is coming soon — a world-class online chess platform. Play, learn openings, solve puzzles, and compete in tournaments.{% endblock %}
+
+{% block content %}
+<div class="coming-soon-wrapper">
+
+  <!-- Google Sign In — prominent at top -->
+  <div class="coming-soon-signin">
+    {% if user %}
+    <div class="coming-soon-signin-greeting">
+      <img src="{{ user.picture }}" class="avatar avatar-lg" alt="{{ user.name }}">
+      <span>Welcome back, <strong>{{ user.display_name or user.name }}</strong>!</span>
+    </div>
+    {% else %}
+    <p class="coming-soon-signin-msg">Be the first to know when we launch — sign in to save your spot.</p>
+    <a href="/auth/login" class="google-signin-btn">
+      <span class="google-g">G</span>
+      Sign in with Google
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Hero -->
+  <div class="coming-soon-hero">
+    <div class="coming-soon-piece">♟</div>
+    <h1 class="coming-soon-title">AjaxChess.com</h1>
+    <p class="coming-soon-tagline">A world-class online chess platform — <strong>coming soon</strong>.</p>
+  </div>
+
+  <!-- Feature preview cards -->
+  <div class="coming-soon-features">
+    <div class="feature-card">
+      <div class="feature-icon">♜</div>
+      <h2 class="feature-title">Play Online</h2>
+      <p class="feature-desc">Challenge players worldwide in real-time or turn-based games. All skill levels welcome.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📖</div>
+      <h2 class="feature-title">Learn Openings</h2>
+      <p class="feature-desc">Master the Sicilian, King's Indian, and hundreds of other openings with interactive lessons.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧩</div>
+      <h2 class="feature-title">Solve Puzzles</h2>
+      <p class="feature-desc">Sharpen your tactical vision with daily puzzles — from beginner mates-in-one to grandmaster compositions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h2 class="feature-title">Tournaments</h2>
+      <p class="feature-desc">Compete in rated tournaments, climb the leaderboard, and earn your place in the hall of fame.</p>
+    </div>
+  </div>
+
+  <div class="coming-soon-footer-links">
+    <a href="/blog">Blog</a> &mdash;
+    <a href="/privacy">Privacy</a> &mdash;
+    <a href="/terms">Terms</a>
+  </div>
+
+</div>
+{% endblock %}

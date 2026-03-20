@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}AjaxChess.com — Play Chess Online{% endblock %}</title>
+  <meta name="description" content="{% block description %}AjaxChess.com — a world-class online chess platform coming soon. Play, learn, and compete.{% endblock %}">
+  <link rel="canonical" href="{% block canonical %}https://ajaxchess.com/{% endblock %}">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="stylesheet" href="/static/css/style.css?v=1" />
+
+  <!-- Apply skin before render to avoid flash -->
+  <script>
+    (function(){
+      document.documentElement.dataset.skin = localStorage.getItem('skin') || 'dark';
+    })();
+  </script>
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="AjaxChess.com">
+  <meta property="og:url"         content="{% block og_url %}https://ajaxchess.com/{% endblock %}">
+  <meta property="og:title"       content="{% block og_title %}AjaxChess.com — Play Chess Online{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}A world-class online chess platform — coming soon.{% endblock %}">
+
+  <!-- JSON-LD -->
+  {% block jsonld %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "AjaxChess.com",
+    "url": "https://ajaxchess.com/",
+    "description": "A world-class online chess platform — play, learn, and compete.",
+    "publisher": { "@type": "Organization", "name": "AjaxChess.com", "url": "https://ajaxchess.com/" }
+  }
+  </script>
+  {% endblock %}
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8102958922361899"
+     crossorigin="anonymous"></script>
+
+  <!-- Google Analytics -->
+  {% if ga_tag %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_tag }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ ga_tag }}');
+  </script>
+  {% endif %}
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-text">♟ AjaxChess.com</span>
+      </a>
+      <nav>
+        <a href="/"     class="{% if mode == 'home' %}active{% endif %}">Home</a>
+        <a href="/blog" class="{% if mode == 'blog' %}active{% endif %}">Blog</a>
+      </nav>
+      <div class="auth-area">
+        {% if user %}
+          <img src="{{ user.picture }}" class="avatar" alt="{{ user.name }}" title="{{ user.name }}">
+          <span class="auth-name">{{ user.name.split()[0] }}</span>
+          <a href="/auth/logout" class="auth-btn logout-btn">Sign Out</a>
+        {% else %}
+          <a href="/auth/login?next={{ request.url.path }}" class="auth-btn login-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1.086 14.432V13H8v-2h2.914V9.5C10.914 7.57 12.1 6.5 13.857 6.5c.84 0 1.564.062 1.775.09v2.06h-1.219c-.955 0-1.139.454-1.139 1.12V11H15.6l-.293 2h-1.834v3.432h-2.559z"/></svg>
+            Sign in with Google
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% if solstice_banner() %}
+  <div class="solstice-banner">⭐ {{ solstice_banner() }} ⭐</div>
+  {% endif %}
+  {% if equinox_banner() %}
+  <div class="solstice-banner">🌍 {{ equinox_banner() }} 🌍</div>
+  {% endif %}
+  {% if chess_day_banner() %}
+  <div class="chess-day-banner">♟ {{ chess_day_banner() }} ♟</div>
+  {% endif %}
+
+  <!-- Top Banner Ad -->
+  <div class="ad-container ad-top">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-8102958922361899"
+         data-ad-slot="4865894696"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <main class="page-{{ mode }}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Bottom Banner Ad -->
+  <div class="ad-container ad-bottom">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-8102958922361899"
+         data-ad-slot="4865894696"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <footer>
+    <p>© 2026 AjaxChess.com &mdash; Built with Python &amp; FastAPI &mdash;
+      <a href="/privacy">Privacy Policy</a> &mdash;
+      <a href="/terms">Terms of Service</a> &mdash;
+      <a href="/blog">Blog</a>
+    </p>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

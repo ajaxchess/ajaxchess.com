@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Admin — Registered Users — AjaxChess.com{% endblock %}
+
+{% block content %}
+<div class="lb-wrapper" style="max-width:900px">
+
+  <h1 class="lb-title">Registered Users</h1>
+  <p style="text-align:center;color:var(--text-dim);font-size:0.85rem;">{{ users|length }} users · newest first</p>
+  <p style="text-align:center;margin-bottom:1.5rem;"><a href="/admin">← Admin Dashboard</a></p>
+
+  <div class="lb-table-wrap">
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Display Name</th>
+          <th>Email</th>
+          <th>Joined</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr class="{{ 'top-1' if loop.index == 1 else 'top-2' if loop.index == 2 else 'top-3' if loop.index == 3 else '' }}">
+          <td class="lb-rank">{{ loop.index }}</td>
+          <td class="lb-name">{{ u.display_name }}</td>
+          <td style="font-size:0.8rem;opacity:0.75">{{ u.email }}</td>
+          <td class="lb-date">{{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
