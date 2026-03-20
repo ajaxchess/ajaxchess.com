@@ -1,16 +1,24 @@
 """
-database.py — SQLAlchemy models + SQLite setup for ajaxchess.com.
+database.py — SQLAlchemy models + MySQL setup for ajaxchess.com.
 """
 from datetime import datetime, timezone
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, DateTime, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from starlette.config import Config
 
-DATABASE_URL = "sqlite:///./chess.db"
+_config = Config(".env")
+DB_USER = _config("DB_USER", default="")
+DB_PASS = _config("DB_PASS", default="")
+DB_HOST = _config("DB_HOST", default="localhost")
+DB_NAME = _config("DB_NAME", default="ajaxchess")
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False},
-)
+if DB_USER:
+    DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}?charset=utf8mb4"
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+else:
+    # Local development fallback — SQLite
+    DATABASE_URL = "sqlite:///./chess.db"
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

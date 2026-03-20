@@ -357,9 +357,12 @@ def admin_operations(request: Request, db: Session = Depends(get_db)):
     cpu_percent = psutil.cpu_percent(interval=0.5)
     mem         = psutil.virtual_memory()
 
-    # Database file size (SQLite)
-    db_file     = "chess.db"
-    db_size_bytes = os.path.getsize(db_file) if os.path.exists(db_file) else 0
+    # Database size (MySQL information_schema)
+    from sqlalchemy import text as _text
+    db_size_bytes = db.execute(
+        _text("SELECT SUM(data_length + index_length) "
+              "FROM information_schema.tables WHERE table_schema = DATABASE()")
+    ).scalar() or 0
 
     table_counts = {
         "UserProfile":  db.query(func.count()).select_from(UserProfile).scalar() or 0,
@@ -479,7 +482,15 @@ def collect_server_stats():
         cpu_percent = psutil.cpu_percent(interval=1)
         mem         = psutil.virtual_memory()
         net         = psutil.net_io_counters()
-        db_size_bytes = os.path.getsize("chess.db") if os.path.exists("chess.db") else 0
+        from sqlalchemy import text as _text
+        _db2 = SessionLocal()
+        try:
+            db_size_bytes = _db2.execute(
+                _text("SELECT SUM(data_length + index_length) "
+                      "FROM information_schema.tables WHERE table_schema = DATABASE()")
+            ).scalar() or 0
+        finally:
+            _db2.close()
 
         with _req_lock:
             reqs = _req_count
