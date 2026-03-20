@@ -84,6 +84,45 @@ async def robots():
     )
     return PlainTextResponse(content)
 
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    base = "https://ajaxchess.com"
+    today = date.today().isoformat()
+    static_pages = [
+        (base + "/",       "weekly",  "1.0"),
+        (base + "/fics",   "monthly", "0.7"),
+        (base + "/blog",   "weekly",  "0.8"),
+        (base + "/privacy","monthly", "0.4"),
+        (base + "/terms",  "monthly", "0.4"),
+    ]
+    urls = []
+    for loc, freq, pri in static_pages:
+        urls.append(
+            f"  <url>\n"
+            f"    <loc>{loc}</loc>\n"
+            f"    <changefreq>{freq}</changefreq>\n"
+            f"    <priority>{pri}</priority>\n"
+            f"    <lastmod>{today}</lastmod>\n"
+            f"  </url>"
+        )
+    for post in BLOG_POSTS:
+        lastmod = post.get("date", today)
+        urls.append(
+            f"  <url>\n"
+            f"    <loc>{base}/blog/{post['slug']}</loc>\n"
+            f"    <changefreq>monthly</changefreq>\n"
+            f"    <priority>0.6</priority>\n"
+            f"    <lastmod>{lastmod}</lastmod>\n"
+            f"  </url>"
+        )
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>\n"
+    )
+    return PlainTextResponse(xml, media_type="application/xml")
+
 @app.get("/ads.txt", include_in_schema=False)
 async def ads_txt():
     if os.path.exists("ads.txt"):
