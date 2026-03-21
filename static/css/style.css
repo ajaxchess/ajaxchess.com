@@ -824,6 +824,45 @@ footer a:hover { text-decoration: underline; }
 .fics-cmd-input::placeholder { color: var(--text-dim); }
 .fics-cmd-input:disabled { opacity: 0.5; }
 
+/* ── Admin Analysis ─────────────────────────────────────────────────────── */
+.analysis-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+.analysis-sidebar {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+.analysis-doc-link {
+  display: block;
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  transition: background 0.12s, color 0.12s;
+}
+.analysis-doc-link:hover { background: var(--surface2); color: var(--text); }
+.analysis-doc-active { background: var(--surface2); color: var(--accent2); font-weight: 600; }
+.analysis-content {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+}
+.analysis-empty { color: var(--text-dim); font-style: italic; font-size: 0.9rem; }
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 700px) {
   .header-inner { height: auto; padding: 0.5rem 0; flex-wrap: wrap; gap: 0.4rem; }

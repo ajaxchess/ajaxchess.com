@@ -603,6 +603,37 @@ def admin_delete_comment(comment_id: int, request: Request, db: Session = Depend
     return RedirectResponse("/admin/blog", status_code=303)
 
 
+@app.get("/admin/analysis", response_class=HTMLResponse)
+def admin_analysis(request: Request, doc: Optional[str] = None):
+    user = get_current_user(request)
+    if not user or user.get("email") not in ADMIN_EMAILS:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    analysis_dir = os.path.join(os.path.dirname(__file__), "analysis")
+    docs = []
+    if os.path.isdir(analysis_dir):
+        for fname in sorted(os.listdir(analysis_dir)):
+            if fname.endswith(".md"):
+                docs.append(fname[:-3])  # slug without .md
+
+    content_html = None
+    current_doc = None
+    if doc and doc in docs:
+        path = os.path.join(analysis_dir, doc + ".md")
+        with open(path, encoding="utf-8") as f:
+            content_html = md_lib.markdown(f.read(), extensions=["fenced_code", "tables"])
+        current_doc = doc
+
+    return templates.TemplateResponse("admin_analysis.html", {
+        "request":      request,
+        "mode":         "admin",
+        "user":         user,
+        "docs":         docs,
+        "content_html": content_html,
+        "current_doc":  current_doc,
+    })
+
+
 # ── Background scheduler: hourly server stats ─────────────────────────────────
 _prev_net = psutil.net_io_counters()
 

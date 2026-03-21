@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Analysis — AjaxChess.com{% endblock %}
+
+{% block content %}
+<div class="lb-wrapper" style="max-width:1100px;">
+
+  <h1 class="lb-title">Analysis</h1>
+  <p style="text-align:center;color:var(--text-dim);font-size:0.85rem;margin-bottom:1.25rem;">
+    {{ user.email }} &nbsp;|&nbsp;
+    <a href="/admin">← Dashboard</a> &nbsp;|&nbsp;
+    <a href="/admin/operations">⚙ Operations</a> &nbsp;|&nbsp;
+    <a href="/admin/kanban">📋 Kanban</a>
+  </p>
+
+  <div class="analysis-layout">
+
+    <!-- Sidebar: file list -->
+    <nav class="analysis-sidebar">
+      {% if docs %}
+        {% for d in docs %}
+        <a href="/admin/analysis?doc={{ d }}"
+           class="analysis-doc-link {% if d == current_doc %}analysis-doc-active{% endif %}">
+          {{ d.replace('-', ' ').replace('_', ' ') }}
+        </a>
+        {% endfor %}
+      {% else %}
+        <p class="analysis-empty">No .md files found in <code>analysis/</code>.</p>
+      {% endif %}
+    </nav>
+
+    <!-- Main content area -->
+    <main class="analysis-content">
+      {% if content_html %}
+        <div class="blog-article-body">{{ content_html | safe }}</div>
+      {% elif current_doc %}
+        <p class="analysis-empty">Could not load document.</p>
+      {% else %}
+        <p class="analysis-empty">Select a document from the list.</p>
+      {% endif %}
+    </main>
+
+  </div>
+
+</div>
+{% endblock %}

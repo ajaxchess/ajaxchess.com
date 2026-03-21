@@ -69,7 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <h1 class="lb-title">Operations</h1>
   <p style="text-align:center;color:var(--text-dim);font-size:0.85rem;">signed in as {{ user.email }}</p>
-  <p style="text-align:center;margin-bottom:1.5rem;"><a href="/admin">← Admin Dashboard</a></p>
+  <p style="text-align:center;margin-bottom:1.5rem;">
+    <a href="/admin">← Admin Dashboard</a> &nbsp;|&nbsp;
+    <a href="/admin/analysis">📊 Analysis</a>
+  </p>
 
   {% if chart_labels != '[]' %}
   <section class="admin-section">
@@ -164,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </table>
   </section>
 
-  <div class="lb-back"><a href="/admin">← Admin Dashboard</a></div>
+  <div class="lb-back"><a href="/admin">← Admin Dashboard</a> &nbsp;|&nbsp; <a href="/admin/analysis">📊 Analysis</a></div>
 
 </div>
 {% endblock %}
